@@ -14,7 +14,7 @@ license
 
 # Build
 build
-dist
+# dist
 *.spec
 
 # Common entries
@@ -49,6 +49,7 @@ yarn-error.log*
 
 # Editor directories and files
 .idea
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
