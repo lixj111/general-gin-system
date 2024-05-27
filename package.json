@@ -1,0 +1,13 @@
+{
+  "name": "first_gin_attempt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "app:dev": "npx nodemon --exec go run main.go --signal SIGKILL"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
