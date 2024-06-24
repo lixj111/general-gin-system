@@ -2,6 +2,7 @@
 bin/
 log/
 logs/
+media/
 *.log
 *.err
 !internal/log/

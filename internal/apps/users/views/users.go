@@ -1,6 +1,8 @@
 package views
 
 import (
+	"strconv"
+
 	"example.com/first_gin_attempt/global"
 	"example.com/first_gin_attempt/internal/apps/users/forms"
 	usersModels "example.com/first_gin_attempt/internal/apps/users/models"
@@ -14,7 +16,7 @@ import (
 /* crud */
 
 // CreateUsers 创建用户
-func CreateUsersView(c *gin.Context) {
+func CreateUserView(c *gin.Context) {
 	var form *forms.CreateUsersForm = &forms.CreateUsersForm{}
 	if err := c.ShouldBind(&form); err == nil {
 		service := services.CreateUsersService{
@@ -33,7 +35,7 @@ func CreateUsersView(c *gin.Context) {
 }
 
 // GetUsers 获取所有用户
-func GetUsers(c *gin.Context) {
+func GetUsersView(c *gin.Context) {
 	var users []usersModels.User
 	if err := global.App.DB.Find(&users).Error; err != nil {
 		response.Fail(c, err.Error())
@@ -57,51 +59,38 @@ func GetUserByName(c *gin.Context) {
 	}
 }
 
-// DeleteUser 删除用户
-func DeleteUser(c *gin.Context) {
-	id := c.Params.ByName("id")
-	if id == "" {
-		response.ValidateFail(c, "id不能为空")
-		return
+// DeleteUserView 删除用户
+func DeleteUserView(c *gin.Context) {
+	uid, _ := strconv.Atoi(c.Param("uid"))
+	service := services.DeleteUsersService{
+		C:   c,
+		UID: uid,
 	}
-	var user usersModels.User
-	if err := global.App.DB.Where("user_id = ?", id).First(&user).Error; err != nil {
+	err := service.Run()
+	if err != nil {
 		response.Fail(c, err.Error())
-		return
+	} else {
+		response.Success(c, nil, "success")
 	}
-	if err := global.App.DB.Delete(&user).Error; err != nil {
-		response.Fail(c, err.Error())
-		return
-	}
-	response.Success(c, user, "success")
 }
 
 // UpdateUser 更新用户
-func UpdateUser(c *gin.Context) {
-	id := c.Params.ByName("id")
-	if id == "" {
-		response.ValidateFail(c, "id不能为空")
-		return
-	}
-	var user usersModels.User
-	if err := global.App.DB.Where("user_id = ?", id).First(&user).Error; err != nil {
-		response.Fail(c, err.Error())
-		return
-	}
-	// 从请求的 JSON 数据中绑定新的用户名
-	var newUser usersModels.User
-	if err := c.BindJSON(&newUser); err != nil {
+func UpdateUsersView(c *gin.Context) {
+	uid, _ := strconv.Atoi(c.Param("uid"))
+	var form *forms.UpdateUsersForm = &forms.UpdateUsersForm{}
+	if err := c.ShouldBind(&form); err == nil {
+		service := services.UpdateUsersService{
+			C:               c,
+			UpdateUsersForm: form,
+			UID:             uid,
+		}
+		err := service.Run()
+		if err != nil {
+			response.Fail(c, err.Error())
+		} else {
+			response.Success(c, nil, "success")
+		}
+	} else {
 		response.ValidateFail(c, err.Error())
-		return
 	}
-	// 修改用户名
-	user.Username = newUser.Username
-	// TODO：修改其他字段
-
-	// 保存修改后的用户对象到数据库
-	if err := global.App.DB.Save(&user).Error; err != nil {
-		response.Fail(c, err.Error())
-		return
-	}
-	response.Success(c, user, "success")
 }
