@@ -10,6 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetUserInfoView 获取用户基本信息
+// @Summary 获取用户信息
+// @Description 通过 JWT 提取用户信息
+// @Tags 用户
+// @Produce  json
+// @Success 200 {object} map[string]interface{} "成功响应：用户信息"
+// @Failure 400 {object} map[string]interface{} "错误响应：请求错误"
+// @Failure 500 {object} map[string]interface{} "错误响应：服务器错误"
+// @Router /user/user [get]
+// @Security ApiKeyAuth
 func GetUserInfoView(c *gin.Context) {
 	username := jwt.ExtractClaims(c)["id"].(string)
 	service := services.GetUserInfoServies{C: c, Username: username}
